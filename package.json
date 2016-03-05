@@ -1,0 +1,42 @@
+{
+  "name": "remote-visual-studio-code",
+  "displayName": "Remote Visual Studio code",
+  "description": "",
+  "version": "0.0.1",
+  "publisher": "Maiolla",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "",
+  },
+  "engines": {
+    "vscode": "^0.10.6"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.sayHello"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.sayHello",
+        "title": "Hello World"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "node ./node_modules/vscode/bin/compile",
+    "compile": "node ./node_modules/vscode/bin/compile -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "typescript": "^1.7.5",
+    "vscode": "^0.11.0"
+  },
+  "dependencies": {
+    "mkdirp": "^0.5.1"
+  }
+}

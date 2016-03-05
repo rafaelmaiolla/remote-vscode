@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/rafaelmaiolla/remote-visual-studio-code.git"
   },
   "engines": {
     "vscode": "^0.10.6"

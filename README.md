@@ -1,13 +1,29 @@
-# README
-## This is the README for your extension "remote-visual-studio-code" 
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+# Remote Visual Studio Code
 
-* Split the editor (`Cmd+\` on OSX or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on OSX or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (OSX) to see a list of Markdown snippets
+A package that implements the Textmate's 'rmate' feature for Visual Studio Code.
 
-### For more information
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+## Installation
 
-** Enjoy!**
+* Install the package from the editor's extension manager.
+* Install a rmate version
+ - Ruby version: https://github.com/textmate/rmate
+ - Bash version: https://github.com/aurora/rmate
+ - Perl version: https://github.com/davidolrik/rmate-perl
+ - Python version: https://github.com/sclukey/rmate-python
+ - Nim version: https://github.com/aurora/rmate-nim
+ - C version: https://github.com/hanklords/rmate.c
+ - Node.js version: https://github.com/jrnewell/jmate
+
+## Usage
+
+* Configure the port - Open the editor, and add the port configuration to your User Preferences `"remote.port": 52689`
+* Start the server in the command palette - Press F1 and type `Remote: Start server`, and press `ENTER` to start the server.
+  You may see a `Starting server` at the status bar in the botton.
+* Create an ssh tunnel
+```bash
+ssh -R 52689:127.0.0.1:52689 user@example.org
+```
+* Go to the remove system and run
+```bash
+rmate -p 52689 file
+```

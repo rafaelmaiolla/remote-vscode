@@ -1,9 +1,9 @@
 {
   "name": "remote-visual-studio-code",
-  "displayName": "Remote Visual Studio code",
+  "displayName": "Remote Visual Studio Code",
   "description": "",
   "version": "0.1.0",
-  "publisher": "Maiolla",
+  "publisher": "rafaelmaiolla",
   "license": "MIT",
   "repository": {
     "type": "git",

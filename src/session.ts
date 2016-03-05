@@ -33,6 +33,7 @@ class Session extends EventEmitter {
     });
 
     this.socket.on('close', () => {
+      console.log("socket closed");
       this.online = false;
     });
   }
@@ -109,8 +110,8 @@ class Session extends EventEmitter {
   openInEditor() {
     vscode.workspace.openTextDocument(this.tempFile).then((textDocument : vscode.TextDocument) => {
       console.log(textDocument.fileName);
-      this.handleChanges(textDocument);
       vscode.window.showTextDocument(textDocument).then((textEditor : vscode.TextEditor) => {
+        this.handleChanges(textDocument);
         vscode.window.setStatusBarMessage(`Opening ${path.basename(this.tempFile)} from ${this.remoteAddress}`, 2000);
       });
     });
@@ -118,12 +119,14 @@ class Session extends EventEmitter {
 
   handleChanges(textDocument : vscode.TextDocument) {
     this.subscriptions.push(vscode.workspace.onDidSaveTextDocument((savedTextDocument : vscode.TextDocument) => {
+      console.log("save event", textDocument.fileName);
       if (savedTextDocument == textDocument) {
         this.save();
       }
     }));
 
     this.subscriptions.push(vscode.workspace.onDidCloseTextDocument((closedTextDocument : vscode.TextDocument) => {
+      console.log("close event", textDocument.fileName);
       if (closedTextDocument == textDocument) {
         this.close();
       }
@@ -193,6 +196,8 @@ class Session extends EventEmitter {
   }
 
   close() {
+    console.log("closing session");
+
     if (this.online) {
       this.online = false;
       this.send("close");

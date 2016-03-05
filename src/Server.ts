@@ -30,7 +30,8 @@ class Server {
       });
     });
 
-    var port = '52688';
+    var remoteConfig = vscode.workspace.getConfiguration("remote");
+    var port = remoteConfig.get("port");
 
     this.server.on('listening', (e) => {
       console.log('listening');
@@ -54,6 +55,7 @@ class Server {
 
   stop() {
     if (this.online) {
+      vscode.window.setStatusBarMessage("Stoping server", 2000);
       this.server.close();
       this.online = false;
     }

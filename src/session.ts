@@ -3,6 +3,7 @@ import randomString  from './randomString';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
+import * as vscode from 'vscode';
 
 class Session extends EventEmitter {
   settings;
@@ -108,6 +109,9 @@ class Session extends EventEmitter {
     // # register events
     // atom.workspace.open(@tempfile).then (editor) =>
     //     @handleConnection(editor)
+    vscode.workspace.openTextDocument(this.tempFile).then(() => {
+      debugger;
+    });
   }
 
   handleConnection() {

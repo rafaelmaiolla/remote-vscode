@@ -1,0 +1,5 @@
+{
+  "ambientDependencies": {
+    "fs-extra": "github:DefinitelyTyped/DefinitelyTyped/fs-extra/fs-extra.d.ts#72d95b38f008fed506c6cbf3af8a693bd7c3363a"
+  }
+}

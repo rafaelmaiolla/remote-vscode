@@ -1,6 +1,7 @@
 import {EventEmitter} from 'events';
 import randomString  from './randomString';
-import * as fs from 'fs-extra';
+import * as fs from 'fs';
+import * as fse from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
@@ -41,12 +42,12 @@ class Session extends EventEmitter {
   makeTemporaryFile() {
     this.tempFile = path.join(os.tmpdir(), randomString(10), this.basename);
     var dirname = path.dirname(this.tempFile);
-    fs.mkdirsSync(dirname);
+    fse.mkdirsSync(dirname);
     this.fd = fs.openSync(this.tempFile, 'w');
   }
 
-  parseChunk(chunk : Buffer) {
-    var chunk = chunk.toString("utf8");
+  parseChunk(data : Buffer) {
+    var chunk = data.toString("utf8");
     var lines = chunk.split("\n");
 
     if (!this.cmd) {

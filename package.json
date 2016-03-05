@@ -1,7 +1,7 @@
 {
   "name": "remote-visual-studio-code",
   "displayName": "Remote Visual Studio Code",
-  "description": "",
+  "description": "A package that implements the Textmate's 'rmate' feature for Visual Studio Code.",
   "version": "0.1.0",
   "publisher": "rafaelmaiolla",
   "license": "MIT",
@@ -42,6 +42,7 @@
     "vscode": "^0.11.0"
   },
   "dependencies": {
-    "fs-extra": "^0.26.5"
+    "fs-extra": "^0.26.5",
+    "log4js": "^0.6.32"
   }
 }

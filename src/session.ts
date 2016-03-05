@@ -1,60 +1,54 @@
 import {EventEmitter} from 'events';
-import randomString  from './randomString';
-import * as fs from 'fs';
-import * as fse from 'fs-extra';
-import * as os from 'os';
-import * as path from 'path';
 import * as vscode from 'vscode';
 import * as net from 'net';
+import Logger from './utils/Logger';
+import Command from './Command';
+import RemoteFile from './RemoteFile';
+
+const L = Logger.getLogger('Session');
 
 class Session extends EventEmitter {
-  variables : Object = {};
-  cmd : string;
-  data : string;
+  command : Command;
   socket : net.Socket;
   online : boolean;
-  tempFile : string;
-  basename : string;
-  fd : number;
-  datasize : number;
-  token : string;
-  displayname : string;
-  remoteAddress : string;
+  remoteFile : RemoteFile;
   subscriptions : Array<vscode.Disposable> = [];
 
   constructor(socket : net.Socket) {
     super();
+    L.trace('constructor');
+
     this.socket = socket;
     this.online = true;
 
-    this.socket.on('data', (chunk) => {
-      if (chunk) {
-        this.parseChunk(chunk);
-      }
-    });
-
-    this.socket.on('close', () => {
-      console.log("socket closed");
-      this.online = false;
-    });
+    this.socket.on('data', this.onSocketData.bind(this));
+    this.socket.on('close', this.onSocketClose.bind(this));
   }
 
-  makeTemporaryFile() {
-    this.tempFile = path.join(os.tmpdir(), randomString(10), this.basename);
-    var dirname = path.dirname(this.tempFile);
-    fse.mkdirsSync(dirname);
-    this.fd = fs.openSync(this.tempFile, 'w');
+  onSocketData(chunk : Buffer) {
+    L.trace('onSocketData', chunk);
+
+    if (chunk) {
+      this.parseChunk(chunk);
+    }
+  }
+
+  onSocketClose() {
+    L.trace('onSocketClose');
+    this.online = false;
   }
 
   parseChunk(data : Buffer) {
+    L.trace('parseChunk', data);
+
     var chunk = data.toString("utf8");
     var lines = chunk.split("\n");
 
-    if (!this.cmd) {
-      this.cmd = lines.shift();
+    if (!this.command) {
+      this.command = new Command(lines.shift());
     }
 
-    if (!this.datasize) {
+    if (this.command.isEmpty()) {
       while (lines.length) {
         var line = lines.shift();
 
@@ -65,141 +59,151 @@ class Session extends EventEmitter {
         var s = line.split(':');
         var name = s.shift().trim();
         var value = s.join(":").trim();
-        this.variables[name] = value;
 
         if (name == 'data') {
-          this.datasize = parseInt(value, 10);
-          this.data = lines.join("\n").slice(0, this.datasize);
+          this.command.setDateSize(parseInt(value, 10));
+          this.command.appendData(lines.join("\n"));
           break;
+
+        } else {
+          this.command.addVariable(name, value);
         }
       }
+
     } else {
-      this.data += lines.join("\n");
-      this.data = this.data.slice(0, this.datasize);
+      this.command.appendData(lines.join("\n"));
     }
 
-    if (this.data && this.data.length == this.datasize) {
-      if ('data' in this.variables) {
-        delete this.variables['data'];
-      }
-
-      this.handleCommand(this.cmd, this.variables, this.data);
-      this.cmd = null;
-      this.variables;
-      this.data = null;
+    if (this.command.isReady()) {
+      this.handleCommand(this.command);
+      this.command = null;
     }
   }
 
-  handleCommand(cmd : string, variables : Object, data : string) {
-    switch (cmd) {
+  handleCommand(command : Command) {
+    L.trace('handleCommand', command.getName());
+
+    switch (command.getName()) {
       case 'open':
-        this.handleOpen(variables, data);
+        this.handleOpen(command);
         break;
 
       case 'list':
-        this.handleList(variables, data);
+        this.handleList(command);
         this.emit('list');
         break;
 
       case 'connect':
-        this.handleConnect(variables, data);
+        this.handleConnect(command);
         this.emit('connect');
         break;
     }
   }
 
   openInEditor() {
-    vscode.workspace.openTextDocument(this.tempFile).then((textDocument : vscode.TextDocument) => {
-      console.log(textDocument.fileName);
+    L.trace('openInEditor');
+
+    vscode.workspace.openTextDocument(this.remoteFile.getLocalFilePath()).then((textDocument : vscode.TextDocument) => {
       vscode.window.showTextDocument(textDocument).then((textEditor : vscode.TextEditor) => {
         this.handleChanges(textDocument);
-        vscode.window.setStatusBarMessage(`Opening ${path.basename(this.tempFile)} from ${this.remoteAddress}`, 2000);
+        L.info(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`);
+        vscode.window.setStatusBarMessage(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`, 2000);
       });
     });
   }
 
   handleChanges(textDocument : vscode.TextDocument) {
+    L.trace('handleChanges', textDocument.fileName);
+
     this.subscriptions.push(vscode.workspace.onDidSaveTextDocument((savedTextDocument : vscode.TextDocument) => {
-      console.log("save event", textDocument.fileName);
       if (savedTextDocument == textDocument) {
         this.save();
       }
     }));
 
     this.subscriptions.push(vscode.workspace.onDidCloseTextDocument((closedTextDocument : vscode.TextDocument) => {
-      console.log("close event", textDocument.fileName);
       if (closedTextDocument == textDocument) {
         this.close();
       }
     }));
   }
 
-  handleOpen(variables, data : string) {
-    this.token = variables["token"];
-    this.displayname = variables["display-name"];
-    this.remoteAddress = this.displayname.split(":")[0];
-    this.basename = path.basename(this.displayname.split(":")[1]);
-    this.makeTemporaryFile();
-    fs.write(this.fd, data, 0, 'utf8', () => {
-      fs.closeSync(this.fd);
-      this.openInEditor();
-    });
+  async handleOpen(command : Command) {
+    L.trace('handleOpen', command.getName());
+
+    this.remoteFile = new RemoteFile(command.getVariable('token'), command.getVariable('display-name'));
+    this.remoteFile.createLocalFile();
+    await this.remoteFile.write(command.getData());
+    this.openInEditor();
   }
 
-  handleConnect(variable, data) {
-    // TODO: show message
+  handleConnect(command : Command) {
+    L.trace('handleConnect', command.getName());
   }
 
-  handleList(variables, data : string) {
-    this.token = variables["token"];
-    this.displayname = variables["display-name"];
-    // this.remoteAddress = this.displayname.split(":")[0]
-    this.basename = "Remote files"
-    this.makeTemporaryFile();
-    fs.write(this.fd, data, null, 'utf8', () => {
-      fs.closeSync(this.fd);
-      // TODO: Close the file if the socket is closed
-      this.openInEditor();
-    });
+  handleList(command : Command) {
+    L.trace('handleList', command.getName());
+
+    // this.token = command.getVariable("token");
+    // this.displayname = command.getVariable("display-name");
+    // // this.remoteAddress = this.displayname.split(":")[0]
+    // this.basename = "Remote files";
+    // this.makeTemporaryFile();
+    // fs.write(this.fd, command.getData(), null, 'utf8', () => {
+    //   fs.closeSync(this.fd);
+    //   // TODO: Close the file if the socket is closed
+    //   this.openInEditor();
+    // });
   }
 
-  send(cmd) {
-    if (this.online) {
+  send(cmd : string) {
+    L.trace('send', cmd);
+
+    if (this.isOnline()) {
       this.socket.write(cmd + "\n");
     }
   }
 
-  open(filePath) {
+  open(filePath : string) {
+    L.trace('filePath', filePath);
+
     this.send("open");
-    this.send("path: #{filePath}");
+    this.send(`path: ${filePath}`);
     this.send("");
   }
 
-  list(dirPath) {
+  list(dirPath : string) {
+    L.trace('list', dirPath);
+
     this.send("list");
-    this.send("path: #{dirPath}");
+    this.send(`path: ${dirPath}`);
     this.send("");
   }
 
   save() {
-    if (!this.online) {
-      return vscode.window.showErrorMessage(`Error saving ${path.basename(this.tempFile)} to ${this.remoteAddress}`);
+    L.trace('save');
+
+    if (!this.isOnline()) {
+      L.error("NOT online");
+      vscode.window.showErrorMessage(`Error saving ${this.remoteFile.getRemoteBaseName()} to ${this.remoteFile.getHost()}`);
+      return;
     }
 
-    vscode.window.setStatusBarMessage(`Saving ${path.basename(this.tempFile)} to ${this.remoteAddress}`, 2000);
+    vscode.window.setStatusBarMessage(`Saving ${this.remoteFile.getRemoteBaseName()} to ${this.remoteFile.getHost()}`, 2000);
+
+    var data = this.remoteFile.readFileSync();
 
     this.send("save");
-    this.send(`token: ${this.token}`);
-    var data = fs.readFileSync(this.tempFile, 'utf8');
+    this.send(`token: ${this.remoteFile.getToken()}`);
     this.send("data: " + Buffer.byteLength(data));
     this.socket.write(data);
     this.send("");
   }
 
   close() {
-    console.log("closing session");
+    L.trace('close');
 
-    if (this.online) {
+    if (this.isOnline()) {
       this.online = false;
       this.send("close");
       this.send("");
@@ -207,6 +211,13 @@ class Session extends EventEmitter {
     }
 
     this.subscriptions.forEach((disposable : vscode.Disposable) => disposable.dispose());
+  }
+
+  isOnline() {
+    L.trace('isOnline');
+
+    L.debug('isOnline?', this.online);
+    return this.online;
   }
 }
 

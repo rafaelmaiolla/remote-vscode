@@ -1,64 +1,97 @@
 import * as net from 'net';
 import Session from "./Session";
 import * as vscode from 'vscode';
+import Logger from './utils/Logger';
+
+const L = Logger.getLogger('Server');
+
+const DEFAULT_PORT = 52689;
 
 class Server {
   online : boolean;
-  server;
-  session;
+  server : net.Server;
+  defaultSession : Session;
 
-  start(quiet : boolean = false) {
-    if (this.online) {
+  start(quiet=false : boolean) {
+    L.trace('start', quiet);
+
+    if (this.isOnline()) {
       this.stop();
+      L.info("Restarting server");
       vscode.window.setStatusBarMessage("Restarting server", 2000);
 
     } else {
       if (!quiet) {
+        L.info("Starting server");
         vscode.window.setStatusBarMessage("Starting server", 2000);
       }
     }
 
-    this.server = net.createServer((socket) => {
-      console.log("Create new session");
+    this.server = net.createServer(this.onServerConnection.bind(this));
 
-      var session = new Session(socket);
-      session.send("Visual code studio " + 1);
+    this.server.on('listening', this.onServerListening.bind(this));
+    this.server.on('error', this.onServerError.bind(this));
+    this.server.on("close", this.onServerClose.bind(this));
 
-      session.on('connect', () => {
-        console.log("connect");
-        this.session = session;
-      });
-    });
+    this.server.listen(this.getPort(), '127.0.0.1');
+  }
 
+  getPort() : number {
     var remoteConfig = vscode.workspace.getConfiguration("remote");
     var port = remoteConfig.get("port");
 
-    this.server.on('listening', (e) => {
-      console.log('listening');
-      this.online = true;
-    });
+    return +(port || DEFAULT_PORT);
+  }
 
-    this.server.on('error', (e) => {
-      console.log('error');
-      setTimeout(() => {
-        console.log('starting');
-        this.start(true);
-      }, 10000);
-    });
+  onServerConnection(socket) {
+    L.trace('onServerConnection');
 
-    this.server.on("close", () => {
-      console.log('close');
-    });
+    var session = new Session(socket);
+    session.send("Visual code studio " + 1);
 
-    this.server.listen(port, 'localhost');
+    session.on('connect', () => {
+      console.log("connect");
+      this.defaultSession = session;
+    });
+  }
+
+  onServerListening(e) {
+    L.trace('onServerListening');
+    this.setOnline(true);
+  }
+
+  onServerError(e) {
+    L.trace('onServerError');
+
+    setTimeout(() => {
+      this.start(true);
+    }, 10000);
+  }
+
+  onServerClose() {
+    L.trace('onServerClose');
   }
 
   stop() {
-    if (this.online) {
+    L.trace('stop');
+
+    if (this.isOnline()) {
       vscode.window.setStatusBarMessage("Stoping server", 2000);
       this.server.close();
-      this.online = false;
+      this.setOnline(false);
     }
+  }
+
+  setOnline(online : boolean) {
+    L.trace('setOnline', online);
+    this.online = online;
+  }
+
+  isOnline() : boolean {
+    L.trace('isOnline');
+
+    L.debug('isOnline?', this.online);
+    return this.online;
   }
 }
 

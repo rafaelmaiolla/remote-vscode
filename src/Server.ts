@@ -1,5 +1,6 @@
 import * as net from 'net';
-import Session from "./session";
+import Session from "./Session";
+import * as vscode from 'vscode';
 
 class Server {
   online : boolean;
@@ -9,13 +10,11 @@ class Server {
   start(quiet : boolean = false) {
     if (this.online) {
       this.stop();
-      // TODO: Show restaring message
-      console.log("Restarting server");
+      vscode.window.setStatusBarMessage("Restarting server", 2000);
 
     } else {
       if (!quiet) {
-        // TODO: Show starting message
-        console.log("Starting server");
+        vscode.window.setStatusBarMessage("Starting server", 2000);
       }
     }
 

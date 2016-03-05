@@ -4,13 +4,13 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import * as net from 'net';
 
 class Session extends EventEmitter {
-  settings;
   variables : Object = {};
   cmd : string;
   data : string;
-  socket;
+  socket : net.Socket;
   online : boolean;
   tempFile : string;
   basename : string;
@@ -19,8 +19,9 @@ class Session extends EventEmitter {
   token : string;
   displayname : string;
   remoteAddress : string;
+  subscriptions : Array<vscode.Disposable> = [];
 
-  constructor(socket) {
+  constructor(socket : net.Socket) {
     super();
     this.socket = socket;
     this.online = true;
@@ -43,8 +44,7 @@ class Session extends EventEmitter {
     this.fd = fs.openSync(this.tempFile, 'w');
   }
 
-  parseChunk(chunk) {
-    debugger;
+  parseChunk(chunk : Buffer) {
     var chunk = chunk.toString("utf8");
     var lines = chunk.split("\n");
 
@@ -88,15 +88,17 @@ class Session extends EventEmitter {
     }
   }
 
-  handleCommand(cmd, variables, data : string) {
-    switch(cmd) {
+  handleCommand(cmd : string, variables : Object, data : string) {
+    switch (cmd) {
       case 'open':
         this.handleOpen(variables, data);
         break;
+
       case 'list':
         this.handleList(variables, data);
         this.emit('list');
         break;
+
       case 'connect':
         this.handleConnect(variables, data);
         this.emit('connect');
@@ -105,21 +107,27 @@ class Session extends EventEmitter {
   }
 
   openInEditor() {
-    // TODO
-    // # register events
-    // atom.workspace.open(@tempfile).then (editor) =>
-    //     @handleConnection(editor)
-    vscode.workspace.openTextDocument(this.tempFile).then(() => {
-      debugger;
+    vscode.workspace.openTextDocument(this.tempFile).then((textDocument : vscode.TextDocument) => {
+      console.log(textDocument.fileName);
+      this.handleChanges(textDocument);
+      vscode.window.showTextDocument(textDocument).then((textEditor : vscode.TextEditor) => {
+        vscode.window.setStatusBarMessage(`Opening ${path.basename(this.tempFile)} from ${this.remoteAddress}`, 2000);
+      });
     });
   }
 
-  handleConnection() {
-    // TODO
-    // buffer = editor.getBuffer()
-    // @subscriptions = new CompositeDisposable
-    // @subscriptions.add buffer.onDidSave(@save)
-    // @subscriptions.add buffer.onDidDestroy(@close)
+  handleChanges(textDocument : vscode.TextDocument) {
+    this.subscriptions.push(vscode.workspace.onDidSaveTextDocument((savedTextDocument : vscode.TextDocument) => {
+      if (savedTextDocument == textDocument) {
+        this.save();
+      }
+    }));
+
+    this.subscriptions.push(vscode.workspace.onDidCloseTextDocument((closedTextDocument : vscode.TextDocument) => {
+      if (closedTextDocument == textDocument) {
+        this.close();
+      }
+    }));
   }
 
   handleOpen(variables, data : string) {
@@ -170,16 +178,14 @@ class Session extends EventEmitter {
   }
 
   save() {
-    if (this.online) {
-      // TODO show status
-      // status-message.display "Error saving #{path.basename @tempfile} to #{@remoteAddress}", 2000
-      return
+    if (!this.online) {
+      return vscode.window.showErrorMessage(`Error saving ${path.basename(this.tempFile)} to ${this.remoteAddress}`);
     }
 
-    // TODO show status
-    // status-message.display "Saving #{path.basename @tempfile} to #{@remoteAddress}", 2000
+    vscode.window.setStatusBarMessage(`Saving ${path.basename(this.tempFile)} to ${this.remoteAddress}`, 2000);
+
     this.send("save");
-    this.send("token: #{@token}");
+    this.send(`token: ${this.token}`);
     var data = fs.readFileSync(this.tempFile, 'utf8');
     this.send("data: " + Buffer.byteLength(data));
     this.socket.write(data);
@@ -194,7 +200,7 @@ class Session extends EventEmitter {
       this.socket.end();
     }
 
-    // this.subscriptions.dispose()
+    this.subscriptions.forEach((disposable : vscode.Disposable) => disposable.dispose());
   }
 }
 

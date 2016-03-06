@@ -12,7 +12,7 @@ class Server {
   server : net.Server;
   defaultSession : Session;
 
-  start(quiet=false : boolean) {
+  start(quiet : boolean) {
     L.trace('start', quiet);
 
     if (this.isOnline()) {

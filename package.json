@@ -2,7 +2,7 @@
   "name": "remote-visual-studio-code",
   "displayName": "Remote Visual Studio Code",
   "description": "A package that implements the Textmate's 'rmate' feature for Visual Studio Code.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "rafaelmaiolla",
   "license": "MIT",
   "repository": {

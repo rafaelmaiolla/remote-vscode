@@ -5,13 +5,23 @@
   "version": "0.1.1",
   "publisher": "rafaelmaiolla",
   "license": "MIT",
+  "author": "Rafael Maiolla <rafaelmaiolla@gmail.com>",
   "repository": {
     "type": "git",
     "url": "https://github.com/rafaelmaiolla/remote-visual-studio-code.git"
   },
+  "bugs": {
+    "url": "https://github.com/rafaelmaiolla/remote-visual-studio-code/issues"
+  },
   "engines": {
     "vscode": "^0.10.6"
   },
+  "keywords": [
+    "rmate",
+    "Remote",
+    "Visual Studio Code",
+    "VSCode"
+  ],
   "categories": [
     "Other"
   ],

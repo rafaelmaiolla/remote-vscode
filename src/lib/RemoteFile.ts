@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as fse from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
-import randomString  from './randomString';
-import Logger from './utils/Logger';
+import randomString  from '../utils/randomString';
+import Logger from '../utils/Logger';
 
 const L = Logger.getLogger('RemoteFile');
 

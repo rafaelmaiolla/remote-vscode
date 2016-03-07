@@ -1,7 +1,7 @@
 import {EventEmitter} from 'events';
 import * as vscode from 'vscode';
 import * as net from 'net';
-import Logger from './utils/Logger';
+import Logger from '../utils/Logger';
 import Command from './Command';
 import RemoteFile from './RemoteFile';
 

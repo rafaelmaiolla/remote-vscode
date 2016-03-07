@@ -1,14 +1,14 @@
 import * as net from 'net';
 import Session from "./Session";
 import * as vscode from 'vscode';
-import Logger from './utils/Logger';
+import Logger from '../utils/Logger';
 
 const L = Logger.getLogger('Server');
 
 const DEFAULT_PORT = 52689;
 
 class Server {
-  online : boolean;
+  online : boolean = false;
   server : net.Server;
   defaultSession : Session;
 

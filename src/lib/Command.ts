@@ -47,7 +47,8 @@ class Command {
 
   setData(data : string) {
     L.trace('setData');
-    this.data = data.slice(0, this.getDataSize());
+    var bufferData = new Buffer(data, 'utf8');
+    this.data = bufferData.slice(0, this.getDataSize()).toString('utf8');
   }
 
   appendData(data : string) {
@@ -69,8 +70,8 @@ class Command {
 
   isReady() : boolean {
     L.trace('isReady');
-    L.debug('isReady?', this.data != null && this.data.length == this.dataSize);
-    return this.data != null && this.data.length == this.dataSize;
+    L.debug('isReady?', this.data != null && Buffer.byteLength(this.data, 'utf8') == this.dataSize);
+    return this.data != null && Buffer.byteLength(this.data, 'utf8') == this.dataSize;
   }
 
   toString() : string {

@@ -4,21 +4,31 @@ import Server from './lib/Server';
 
 var server;
 
+const startServer = () => {
+  if (!server) {
+    server = new Server();
+  }
+
+  server.start();
+};
+
+const stopServer = () => {
+  if (server) {
+    server.stop();
+  }
+};
+
 export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('extension.startServer', () => {
 
-    if (!server) {
-      server = new Server();
-    }
+  var remoteConfig = vscode.workspace.getConfiguration("remote");
+  var onstartup = remoteConfig.get("onstartup");
 
-    server.start();
-	}));
+  if (onstartup) {
+    startServer();
+  }
 
-  context.subscriptions.push(vscode.commands.registerCommand('extension.stopServer', () => {
-    if (server) {
-      server.stop();
-    }
-	}));
+	context.subscriptions.push(vscode.commands.registerCommand('extension.startServer', startServer));
+  context.subscriptions.push(vscode.commands.registerCommand('extension.stopServer', stopServer));
 }
 
 export function deactivate() {

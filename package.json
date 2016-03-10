@@ -26,11 +26,28 @@
     "Other"
   ],
   "activationEvents": [
+    "*",
     "onCommand:extension.startServer",
     "onCommand:extension.stopServer"
   ],
   "main": "./out/src/extension",
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Remote VSCode configuration",
+      "properties": {
+        "remote.port": {
+          "type": "number",
+          "default": 52689,
+          "description": "Port number to use for connection."
+        },
+        "remote.onstartup": {
+          "type": "boolean",
+          "default": false,
+          "description": "Launch the server on start up."
+        }
+      }
+    },
     "commands": [
       {
         "command": "extension.startServer",

@@ -1,17 +1,17 @@
 {
-  "name": "remote-visual-studio-code",
-  "displayName": "Remote Visual Studio Code",
-  "description": "A package that implements the Textmate's 'rmate' feature for Visual Studio Code.",
-  "version": "0.1.4",
+  "name": "remote-vscode",
+  "displayName": "Remote VSCode",
+  "description": "A package that implements the Textmate's 'rmate' feature for VSCode.",
+  "version": "0.1.5",
   "publisher": "rafaelmaiolla",
   "license": "MIT",
   "author": "Rafael Maiolla <rafaelmaiolla@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rafaelmaiolla/remote-visual-studio-code.git"
+    "url": "https://github.com/rafaelmaiolla/remote-vscode.git"
   },
   "bugs": {
-    "url": "https://github.com/rafaelmaiolla/remote-visual-studio-code/issues"
+    "url": "https://github.com/rafaelmaiolla/remote-vscode/issues"
   },
   "engines": {
     "vscode": "^0.10.6"

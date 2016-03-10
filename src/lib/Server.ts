@@ -47,7 +47,7 @@ class Server {
     L.trace('onServerConnection');
 
     var session = new Session(socket);
-    session.send("Visual code studio " + 1);
+    session.send("VSCode " + 1);
 
     session.on('connect', () => {
       console.log("connect");

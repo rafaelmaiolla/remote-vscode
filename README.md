@@ -1,6 +1,6 @@
-# Remote Visual Studio Code
+# Remote VSCode
 
-A package that implements the Textmate's 'rmate' feature for Visual Studio Code.
+A package that implements the Textmate's 'rmate' feature for VSCode.
 
 ## Installation
 

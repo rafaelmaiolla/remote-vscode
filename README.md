@@ -41,4 +41,4 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
   ```
 
 ## License
-[MIT](LICENSE)
+[MIT](LICENSE.txt)

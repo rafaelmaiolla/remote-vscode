@@ -8,16 +8,26 @@ import Logger from '../utils/Logger';
 const L = Logger.getLogger('RemoteFile');
 
 class RemoteFile {
+  dataSize : number;
+  writenDataSize : number = 0;
+
   token : string;
   localFilePath : string;
 
   remoteHost : string;
   remoteBaseName : string;
 
-  constructor(token : string, displayName : string) {
-    L.trace('constructor', token, displayName);
+  fd : number;
 
+  constructor() {
+    L.trace('constructor');
+  }
+
+  setToken(token : string) {
     this.token = token;
+  }
+
+  setDisplayName(displayName : string) {
     this.remoteHost = displayName.split(':')[0];
     this.remoteBaseName = path.basename(displayName.split(':')[1]);
   }
@@ -43,7 +53,7 @@ class RemoteFile {
   }
 
   getLocalFilePath() {
-    L.trace('getLocalFilePath');
+    L.trace('getLocalFilePath', this.localFilePath);
     return this.localFilePath;
   }
 
@@ -53,8 +63,6 @@ class RemoteFile {
     this.localFilePath = path.join(os.tmpdir(), randomString(10), this.getRemoteBaseName());
 
     this.createLocalDir();
-
-
   }
 
   createLocalDir() {
@@ -62,21 +70,63 @@ class RemoteFile {
     fse.mkdirsSync(this.getLocalDirectoryName());
   }
 
-  async write(data : string) {
-    L.trace('write');
-
-    return new Promise((resolve, reject) => {
-      var fd = fs.openSync(this.localFilePath, 'w');
-      fs.write(fd, data, 0, 'utf8', () => {
-        fs.closeSync(fd);
-        resolve();
-      });
-    });
+  openSync() {
+    this.fd = fs.openSync(this.getLocalFilePath(), 'w');
   }
 
-  readFileSync() : string {
+  closeSync() {
+    fs.closeSync(this.fd);
+    this.fd = null;
+  }
+
+  writeSycn(buffer : Buffer, offset : number, length : number) {
+    L.trace('writeSycn');
+    if (this.fd) {
+      L.debug('writing data');
+      fs.writeSync(this.fd, buffer, offset, length);
+    }
+  }
+
+  readFileSync() : Buffer {
     L.trace('readFileSync');
-    return fs.readFileSync(this.localFilePath, 'utf8');
+    return fs.readFileSync(this.localFilePath);
+  }
+
+  appendData(buffer : Buffer) {
+    L.trace('appendData', buffer.length);
+
+    var length = buffer.length;
+    if (this.writenDataSize + length > this.dataSize) {
+      length = this.dataSize - this.writenDataSize;
+    }
+
+    this.writenDataSize += length;
+    L.debug("writenDataSize", this.writenDataSize);
+
+    this.writeSycn(buffer, 0, length);
+  }
+
+  setDataSize(dataSize : number) {
+    L.trace('setDataSize', dataSize);
+    this.dataSize = dataSize;
+  }
+
+  getDataSize() : number {
+    L.trace('getDataSize');
+    L.debug('getDataSize', this.dataSize);
+    return this.dataSize;
+  }
+
+  isEmpty() : boolean {
+    L.trace('isEmpty');
+    L.debug('isEmpty?', this.dataSize == null);
+    return this.dataSize == null;
+  }
+
+  isReady() : boolean {
+    L.trace('isReady');
+    L.debug('isReady?', this.writenDataSize == this.dataSize);
+    return this.writenDataSize == this.dataSize;
   }
 }
 

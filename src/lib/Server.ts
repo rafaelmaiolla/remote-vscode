@@ -61,7 +61,7 @@ class Server {
   }
 
   onServerError(e) {
-    L.trace('onServerError');
+    L.trace('onServerError', e);
 
     setTimeout(() => {
       this.start(true);

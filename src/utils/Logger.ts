@@ -5,8 +5,7 @@ log4js.configure({
       "type": "console",
       "level": "TRACE"
     }
-  ],
-  "replaceConsole": true
+  ]
 });
 
 export default log4js;

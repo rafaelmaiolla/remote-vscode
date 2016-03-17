@@ -70,8 +70,7 @@ class Session extends EventEmitter {
           this.remoteFile.setDataSize(parseInt(value, 10));
           this.remoteFile.setToken(this.command.getVariable('token'));
           this.remoteFile.setDisplayName(this.command.getVariable('display-name'));
-          this.remoteFile.createLocalFile();
-          this.remoteFile.openSync();
+          this.remoteFile.initialize();
 
           this.remoteFile.appendData(buffer.slice(buffer.indexOf(line) + Buffer.byteLength(`${line}\n`)));
           break;

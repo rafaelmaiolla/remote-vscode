@@ -27,14 +27,27 @@ class RemoteFile {
     this.token = token;
   }
 
-  setDisplayName(displayName : string) {
-    this.remoteHost = displayName.split(':')[0];
-    this.remoteBaseName = path.basename(displayName.split(':')[1]);
-  }
-
   getToken() {
     L.trace('getRemoteBaseName');
     return this.token;
+  }
+
+  setDisplayName(displayName : string) {
+    var displayNameSplitted = displayName.split(':');
+
+    if (displayNameSplitted.length === 1) {
+      this.remoteHost = "";
+
+    } else {
+      this.remoteHost = displayNameSplitted.shift();
+    }
+
+    this.remoteBaseName = displayNameSplitted.join(":");
+  }
+
+  getHost() {
+    L.trace('getHost', this.remoteHost);
+    return this.remoteHost;
   }
 
   getRemoteBaseName() {
@@ -42,14 +55,22 @@ class RemoteFile {
     return this.remoteBaseName;
   }
 
+  createLocalFilePath() {
+    L.trace('createLocalFilePath');
+    this.localFilePath = path.join(os.tmpdir(), randomString(10), this.getRemoteBaseName());
+  }
+
   getLocalDirectoryName() {
-    L.trace('getLocalDirectoryName');
+    L.trace('getLocalDirectoryName', path.dirname(this.localFilePath));
+    if (!this.localFilePath) {
+      return;
+    }
     return path.dirname(this.localFilePath);
   }
 
-  getHost() {
-    L.trace('getHost');
-    return this.remoteHost;
+  createLocalDir() {
+    L.trace('createLocalDir');
+    fse.mkdirsSync(this.getLocalDirectoryName());
   }
 
   getLocalFilePath() {
@@ -57,26 +78,22 @@ class RemoteFile {
     return this.localFilePath;
   }
 
-  createLocalFile() {
-    L.trace('createLocalFile');
-
-    this.localFilePath = path.join(os.tmpdir(), randomString(10), this.getRemoteBaseName());
-
-    this.createLocalDir();
-  }
-
-  createLocalDir() {
-    L.trace('createLocalFile');
-    fse.mkdirsSync(this.getLocalDirectoryName());
-  }
-
   openSync() {
+    L.trace('openSync');
     this.fd = fs.openSync(this.getLocalFilePath(), 'w');
   }
 
   closeSync() {
+    L.trace('closeSync');
     fs.closeSync(this.fd);
     this.fd = null;
+  }
+
+  initialize() {
+    L.trace('initialize');
+    this.createLocalFilePath();
+    this.createLocalDir();
+    this.openSync();
   }
 
   writeSycn(buffer : Buffer, offset : number, length : number) {

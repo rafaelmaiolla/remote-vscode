@@ -32,10 +32,6 @@ class Command {
     L.trace('getVariable', key);
     return this.variables.get(key);
   }
-
-  toString() : string {
-    return `Command:${this.getName()}`;
-  }
 }
 
 export default Command;

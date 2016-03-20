@@ -133,6 +133,8 @@ class Session extends EventEmitter {
         this.handleChanges(textDocument);
         L.info(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`);
         vscode.window.setStatusBarMessage(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`, 2000);
+
+        this.showSelectedLine(textEditor);
       });
     });
   }
@@ -151,6 +153,13 @@ class Session extends EventEmitter {
         this.close();
       }
     }));
+  }
+
+  showSelectedLine(textEditor : vscode.TextEditor) {
+    var selection = +(this.command.getVariable('selection'));
+    if (selection) {
+      textEditor.revealRange(new vscode.Range(selection, 0, selection + 1, 1));
+    }
   }
 
   handleOpen(command : Command) {

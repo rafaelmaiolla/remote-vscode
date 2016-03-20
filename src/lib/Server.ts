@@ -10,6 +10,7 @@ const DEFAULT_PORT = 52689;
 class Server {
   online : boolean = false;
   server : net.Server;
+  port : number;
   defaultSession : Session;
 
   start(quiet : boolean) {
@@ -36,11 +37,14 @@ class Server {
     this.server.listen(this.getPort(), '127.0.0.1');
   }
 
-  getPort() : number {
-    var remoteConfig = vscode.workspace.getConfiguration("remote");
-    var port = remoteConfig.get("port");
+  setPort(port : number) {
+    L.trace('setPort', port);
+    this.port = port;
+  }
 
-    return +(port || DEFAULT_PORT);
+  getPort() : number {
+    L.trace('getPort', +(this.port || DEFAULT_PORT));
+    return +(this.port || DEFAULT_PORT);
   }
 
   onServerConnection(socket) {
@@ -62,6 +66,12 @@ class Server {
 
   onServerError(e) {
     L.trace('onServerError', e);
+
+    if (e.code == 'EADDRINUSE') {
+      return vscode.window.showErrorMessage(`Failed to start server, port ${e.port} already in use`);
+    }
+
+    vscode.window.showErrorMessage(`Failed to start server, will try again in 10 seconds}`);
 
     setTimeout(() => {
       this.start(true);

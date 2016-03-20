@@ -39,7 +39,7 @@ class Session extends EventEmitter {
     this.online = false;
   }
 
-  parseChunk(buffer : Buffer) {
+  parseChunk(buffer : any) {
     L.trace('parseChunk', buffer);
 
     if (this.command && this.remoteFile.isReady()) {

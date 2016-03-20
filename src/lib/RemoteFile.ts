@@ -96,11 +96,11 @@ class RemoteFile {
     this.openSync();
   }
 
-  writeSycn(buffer : Buffer, offset : number, length : number) {
+  writeSycn(buffer : any, offset : number, length : number) {
     L.trace('writeSycn');
     if (this.fd) {
       L.debug('writing data');
-      fs.writeSync(this.fd, buffer, offset, length);
+      fs.writeSync(this.fd, buffer, offset, length, undefined);
     }
   }
 

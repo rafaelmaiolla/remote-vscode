@@ -14,6 +14,7 @@ class Session extends EventEmitter {
   subscriptions : Array<vscode.Disposable> = [];
   remoteFile : RemoteFile;
   attempts : number = 0;
+  closeTimeout : number;
 
   constructor(socket : net.Socket) {
     super();
@@ -150,7 +151,18 @@ class Session extends EventEmitter {
 
     this.subscriptions.push(vscode.workspace.onDidCloseTextDocument((closedTextDocument : vscode.TextDocument) => {
       if (closedTextDocument == textDocument) {
-        this.close();
+        this.closeTimeout  && clearTimeout(this.closeTimeout);
+        // If you change the textDocument language, it will close and re-open the same textDocument, so we add add
+        // a timeout to make sure it is really being closed before close the socket.
+        this.closeTimeout = setTimeout(() => {
+          this.close();
+        }, 2);
+      }
+    }));
+
+    this.subscriptions.push(vscode.workspace.onDidOpenTextDocument((openedTextDocument : vscode.TextDocument) => {
+      if (openedTextDocument == textDocument) {
+        this.closeTimeout  && clearTimeout(this.closeTimeout);
       }
     }));
   }

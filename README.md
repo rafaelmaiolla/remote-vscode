@@ -1,6 +1,8 @@
 # Remote VSCode
 
 [![Build Status](https://travis-ci.org/rafaelmaiolla/remote-vscode.svg?branch=master)](https://travis-ci.org/rafaelmaiolla/remote-vscode)
+[![Known Vulnerabilities](https://snyk.io/test/github/rafaelmaiolla/remote-vscode/badge.svg)](https://snyk.io/test/github/rafaelmaiolla/remote-vscode)
+
 
 A package that implements the Textmate's 'rmate' feature for VSCode.
 

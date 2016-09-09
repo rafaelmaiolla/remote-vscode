@@ -40,7 +40,7 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
   ssh -R 52689:127.0.0.1:52689 user@example.org
   ```
 
-* Go to the remove system and run
+* Go to the remote system and run
   ```bash
   rmate -p 52689 file
   ```

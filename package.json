@@ -38,7 +38,7 @@
       "properties": {
         "remote.port": {
           "type": "number",
-          "default": 52689,
+          "default": 52698,
           "description": "Port number to use for connection."
         },
         "remote.onstartup": {

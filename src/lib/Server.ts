@@ -5,7 +5,7 @@ import Logger from '../utils/Logger';
 
 const L = Logger.getLogger('Server');
 
-const DEFAULT_PORT = 52689;
+const DEFAULT_PORT = 52698;
 
 class Server {
   online : boolean = false;

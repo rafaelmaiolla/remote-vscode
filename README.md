@@ -26,7 +26,7 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
   //-------- Remote VSCode configuration --------
 
   // Port number to use for connection.
-  "remote.port": 52689,
+  "remote.port": 52698,
 
   // Launch the server on start up.
   "remote.onstartup": true
@@ -37,12 +37,12 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
 
 * Create an ssh tunnel
   ```bash
-  ssh -R 52689:127.0.0.1:52689 user@example.org
+  ssh -R 52698:127.0.0.1:52698 user@example.org
   ```
 
 * Go to the remote system and run
   ```bash
-  rmate -p 52689 file
+  rmate -p 52698 file
   ```
 
 ## License

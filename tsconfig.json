@@ -3,13 +3,14 @@
     "module": "commonjs",
     "target": "es6",
     "outDir": "out",
-    "noLib": true,
+    "lib": [
+      "es6"
+    ],
     "sourceMap": true,
     "rootDir": "."
   },
   "exclude": [
-    "typings/browser.d.ts",
-    "typings/browser",
-    "node_modules"
+    "node_modules",
+    ".vscode-test"
   ]
 }

@@ -2,7 +2,7 @@
   "name": "remote-vscode",
   "displayName": "Remote VSCode",
   "description": "A package that implements the Textmate's 'rmate' feature for VSCode.",
-  "version": "0.1.8",
+  "version": "1.0.0",
   "publisher": "rafaelmaiolla",
   "license": "MIT",
   "author": "Rafael Maiolla <rafaelmaiolla@gmail.com>",

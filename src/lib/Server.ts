@@ -6,11 +6,13 @@ import Logger from '../utils/Logger';
 const L = Logger.getLogger('Server');
 
 const DEFAULT_PORT = 52698;
+const DEFAULT_HOST = '127.0.0.1';
 
 class Server {
   online : boolean = false;
   server : net.Server;
   port : number;
+  host : string;
   defaultSession : Session;
 
   start(quiet : boolean) {
@@ -34,7 +36,7 @@ class Server {
     this.server.on('error', this.onServerError.bind(this));
     this.server.on("close", this.onServerClose.bind(this));
 
-    this.server.listen(this.getPort(), '127.0.0.1');
+    this.server.listen(this.getPort(), this.getHost());
   }
 
   setPort(port : number) {
@@ -45,6 +47,16 @@ class Server {
   getPort() : number {
     L.trace('getPort', +(this.port || DEFAULT_PORT));
     return +(this.port || DEFAULT_PORT);
+  }
+
+  setHost(host : string) {
+    L.trace('setHost', host);
+    this.host = host;
+  }
+
+  getHost() : string {
+    L.trace('getHost', +(this.host || DEFAULT_HOST));
+    return (this.host || DEFAULT_HOST);
   }
 
   onServerConnection(socket) {

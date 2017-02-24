@@ -2,7 +2,7 @@
   "name": "remote-vscode",
   "displayName": "Remote VSCode",
   "description": "A package that implements the Textmate's 'rmate' feature for VSCode.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "rafaelmaiolla",
   "license": "MIT",
   "author": "Rafael Maiolla <rafaelmaiolla@gmail.com>",
@@ -45,7 +45,12 @@
           "type": "boolean",
           "default": false,
           "description": "Launch the server on start up."
-        }
+        },
+        "remote.host": {
+          "type": "string",
+          "default": "127.0.0.1",
+          "description": "Address to listen on."
+        }        
       }
     },
     "commands": [

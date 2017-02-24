@@ -8,6 +8,7 @@ const L = Logger.getLogger('extension');
 var server : Server;
 var changeConfigurationDisposable : vscode.Disposable;
 var port : number;
+var host : string;
 var onStartup : boolean;
 
 const startServer = () => {
@@ -18,6 +19,7 @@ const startServer = () => {
   }
 
   server.setPort(port);
+  server.setHost(host);
   server.start(false);
 };
 
@@ -35,6 +37,7 @@ const initialize = () => {
   var configuration = getConfiguration();
   onStartup = configuration.onStartup;
   port = configuration.port;
+  host = configuration.host;
 
   if (onStartup) {
     startServer();
@@ -47,7 +50,8 @@ const getConfiguration = () => {
 
   var configuration = {
     onStartup: remoteConfig.get<boolean>('onstartup'),
-    port: remoteConfig.get<number>('port')
+    port: remoteConfig.get<number>('port'),
+    host: remoteConfig.get<string>('host')
   };
 
   L.debug("getConfiguration", configuration);
@@ -57,7 +61,7 @@ const getConfiguration = () => {
 
 const hasConfigurationChanged = (configuration) => {
   L.trace('hasConfigurationChanged');
-  var hasChanged = configuration.port !== port || configuration.onStartup !== onStartup;
+  var hasChanged = configuration.port !== port || configuration.onStartup !== onStartup || configuration.host !== host;
 
   L.debug("hasConfigurationChanged?", hasChanged);
   return hasChanged;

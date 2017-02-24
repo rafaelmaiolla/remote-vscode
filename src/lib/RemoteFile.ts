@@ -61,7 +61,7 @@ class RemoteFile {
   }
 
   getLocalDirectoryName() {
-    L.trace('getLocalDirectoryName', path.dirname(this.localFilePath));
+    L.trace('getLocalDirectoryName', path.dirname(this.localFilePath || ""));
     if (!this.localFilePath) {
       return;
     }

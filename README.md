@@ -30,6 +30,9 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
 
   // Launch the server on start up.
   "remote.onstartup": true
+
+  // Do not display errors when attempting to listen on remote.port.
+  "remote.squashlistenerror": false
   ```
 
 * Start the server in the command palette - Press F1 and type `Remote: Start server`, and press `ENTER` to start the server.

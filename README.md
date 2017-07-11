@@ -18,6 +18,7 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
  - Nim version: https://github.com/aurora/rmate-nim
  - C version: https://github.com/hanklords/rmate.c
  - Node.js version: https://github.com/jrnewell/jmate
+ - Golang version: https://github.com/mattn/gomate
 
 ## Usage
 

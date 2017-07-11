@@ -10,6 +10,7 @@ var changeConfigurationDisposable : vscode.Disposable;
 var port : number;
 var host : string;
 var onStartup : boolean;
+var squashListenError : boolean;
 
 const startServer = () => {
   L.trace('startServer');
@@ -20,6 +21,7 @@ const startServer = () => {
 
   server.setPort(port);
   server.setHost(host);
+  server.setSquashListenError(squashListenError);
   server.start(false);
 };
 
@@ -50,6 +52,7 @@ const getConfiguration = () => {
 
   var configuration = {
     onStartup: remoteConfig.get<boolean>('onstartup'),
+    squashListenError: remoteConfig.get<boolean>('squashlistenerror'),
     port: remoteConfig.get<number>('port'),
     host: remoteConfig.get<string>('host')
   };

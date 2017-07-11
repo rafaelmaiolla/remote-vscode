@@ -50,6 +50,11 @@
           "type": "string",
           "default": "127.0.0.1",
           "description": "Address to listen on."
+        },
+        "remote.squashlistenerror": {
+          "type": "boolean",
+          "default": false,
+          "description": "Do not show error when attempting to listen on specified port."
         }
       }
     },

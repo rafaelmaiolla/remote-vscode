@@ -40,6 +40,7 @@ const initialize = () => {
   onStartup = configuration.onStartup;
   port = configuration.port;
   host = configuration.host;
+  dontShowPortAlreadyInUseError = configuration.dontShowPortAlreadyInUseError;
 
   if (onStartup) {
     startServer();
@@ -64,7 +65,10 @@ const getConfiguration = () => {
 
 const hasConfigurationChanged = (configuration) => {
   L.trace('hasConfigurationChanged');
-  var hasChanged = configuration.port !== port || configuration.onStartup !== onStartup || configuration.host !== host;
+  var hasChanged = ((configuration.port !== port) ||
+                    (configuration.onStartup !== onStartup) ||
+                    (configuration.host !== host) ||
+                    (configuration.dontShowPortAlreadyInUseError !== dontShowPortAlreadyInUseError));
 
   L.debug("hasConfigurationChanged?", hasChanged);
   return hasChanged;

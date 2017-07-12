@@ -44,7 +44,7 @@ suite("Command Tests", () => {
     var remoteFile = new RemoteFile();
 
     var hostname = "hostname";
-    var remoteBasename = "somefile";
+    var remoteBasename = "someFile";
 
     remoteFile.setDisplayName(`${hostname}:${remoteBasename}`);
 
@@ -76,7 +76,7 @@ suite("Command Tests", () => {
     var remoteFile = new RemoteFile();
 
     var hostname = "hostname";
-    var remoteBasename = "somefile";
+    var remoteBasename = "someFile";
 
     remoteFile.setDisplayName(`${hostname}:${remoteBasename}`);
 
@@ -87,7 +87,7 @@ suite("Command Tests", () => {
     var remoteFile = new RemoteFile();
 
     var hostname = "hostname";
-    var remoteBasename = "somefile";
+    var remoteBasename = "someFile";
     remoteFile.setDisplayName(`${hostname}:${remoteBasename}`);
     remoteFile.createLocalFilePath();
 
@@ -101,7 +101,7 @@ suite("Command Tests", () => {
     var remoteFile = new RemoteFile();
 
     var hostname = "hostname";
-    var remoteBasename = "somefile";
+    var remoteBasename = "someFile";
 
     remoteFile.setDisplayName(`${hostname}:${remoteBasename}`);
 
@@ -117,7 +117,7 @@ suite("Command Tests", () => {
     var remoteFile = new RemoteFile();
 
     var hostname = "hostname";
-    var remoteBasename = "somefile";
+    var remoteBasename = "someFile";
     remoteFile.setDisplayName(`${hostname}:${remoteBasename}`);
     remoteFile.createLocalFilePath();
     var directoryPath = remoteFile.getLocalDirectoryName();
@@ -130,7 +130,7 @@ suite("Command Tests", () => {
     var remoteFile = new RemoteFile();
 
     var hostname = "hostname";
-    var remoteBasename = "somefile";
+    var remoteBasename = "someFile";
     remoteFile.setDisplayName(`${hostname}:${remoteBasename}`);
 
     assert.equal(undefined, remoteFile.getLocalFilePath());
@@ -144,7 +144,6 @@ suite("Command Tests", () => {
 
 	});
 
-
   test("openSync", () => {
     var remoteFile = new RemoteFile();
 	});
@@ -153,7 +152,7 @@ suite("Command Tests", () => {
     var remoteFile = new RemoteFile();
 	});
 
-  test("writeSycn", () => {
+  test("writeSync", () => {
     var remoteFile = new RemoteFile();
 	});
 

@@ -13,7 +13,7 @@ class Server {
   server : net.Server;
   port : number;
   host : string;
-  squashListenError : boolean = false;
+  dontShowPortAlreadyInUseError : boolean = false;
   defaultSession : Session;
 
   start(quiet : boolean) {
@@ -60,9 +60,9 @@ class Server {
     return (this.host || DEFAULT_HOST);
   }
 
-  setSquashListenError(squash : boolean) {
-    L.trace('setSquashListenError', squash);
-    this.squashListenError = squash;
+  setDontShowPortAlreadyInUseError(dontShowPortAlreadyInUseError : boolean) {
+    L.trace('setDontShowPortAlreadyInUseError', dontShowPortAlreadyInUseError);
+    this.dontShowPortAlreadyInUseError = dontShowPortAlreadyInUseError;
   }
 
   onServerConnection(socket) {
@@ -86,8 +86,8 @@ class Server {
     L.trace('onServerError', e);
 
     if (e.code == 'EADDRINUSE') {
-      if (this.squashListenError) {
-        return
+      if (this.dontShowPortAlreadyInUseError) {
+        return;
       } else {
         return vscode.window.showErrorMessage(`Failed to start server, port ${e.port} already in use`);
       }
@@ -108,7 +108,7 @@ class Server {
     L.trace('stop');
 
     if (this.isOnline()) {
-      vscode.window.setStatusBarMessage("Stoping server", 2000);
+      vscode.window.setStatusBarMessage("Stopping server", 2000);
       this.server.close();
       this.setOnline(false);
     }

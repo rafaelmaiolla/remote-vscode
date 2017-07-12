@@ -10,7 +10,7 @@ var changeConfigurationDisposable : vscode.Disposable;
 var port : number;
 var host : string;
 var onStartup : boolean;
-var squashListenError : boolean;
+var dontShowPortAlreadyInUseError : boolean;
 
 const startServer = () => {
   L.trace('startServer');
@@ -21,7 +21,7 @@ const startServer = () => {
 
   server.setPort(port);
   server.setHost(host);
-  server.setSquashListenError(squashListenError);
+  server.setDontShowPortAlreadyInUseError(dontShowPortAlreadyInUseError);
   server.start(false);
 };
 
@@ -52,7 +52,7 @@ const getConfiguration = () => {
 
   var configuration = {
     onStartup: remoteConfig.get<boolean>('onstartup'),
-    squashListenError: remoteConfig.get<boolean>('squashlistenerror'),
+    dontShowPortAlreadyInUseError: remoteConfig.get<boolean>('dontShowPortAlreadyInUseError'),
     port: remoteConfig.get<number>('port'),
     host: remoteConfig.get<string>('host')
   };

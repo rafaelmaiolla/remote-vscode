@@ -2,19 +2,25 @@ import * as net from 'net';
 import Session from "./Session";
 import * as vscode from 'vscode';
 import Logger from '../utils/Logger';
+import {EventEmitter} from 'events';
 
 const L = Logger.getLogger('Server');
 
 const DEFAULT_PORT = 52698;
 const DEFAULT_HOST = '127.0.0.1';
 
-class Server {
+class Server extends EventEmitter {
   online : boolean = false;
   server : net.Server;
   port : number;
   host : string;
   dontShowPortAlreadyInUseError : boolean = false;
   defaultSession : Session;
+
+  constructor() {
+    super();
+    L.trace('constructor');
+  }
 
   start(quiet : boolean) {
     L.trace('start', quiet);
@@ -23,12 +29,15 @@ class Server {
       this.stop();
       L.info("Restarting server");
       vscode.window.setStatusBarMessage("Restarting server", 2000);
+      this.emit('restarting');
 
     } else {
       if (!quiet) {
         L.info("Starting server");
         vscode.window.setStatusBarMessage("Starting server", 2000);
       }
+
+      this.emit('starting');
     }
 
     this.server = net.createServer(this.onServerConnection.bind(this));
@@ -80,10 +89,13 @@ class Server {
   onServerListening(e) {
     L.trace('onServerListening');
     this.setOnline(true);
+    this.emit('ready');
   }
 
   onServerError(e) {
     L.trace('onServerError', e);
+
+    this.emit('error', e);
 
     if (e.code == 'EADDRINUSE') {
       if (this.dontShowPortAlreadyInUseError) {
@@ -106,6 +118,8 @@ class Server {
 
   stop() {
     L.trace('stop');
+
+    this.emit('stopped');
 
     if (this.isOnline()) {
       vscode.window.setStatusBarMessage("Stopping server", 2000);

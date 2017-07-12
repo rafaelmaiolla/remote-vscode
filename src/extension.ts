@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import Server from './lib/Server';
 import Logger from './utils/Logger';
+import StatusBarItem from './lib/StatusBarItem';
 
 const L = Logger.getLogger('extension');
 
@@ -11,6 +12,7 @@ var port : number;
 var host : string;
 var onStartup : boolean;
 var dontShowPortAlreadyInUseError : boolean;
+var statusBarItem : StatusBarItem;
 
 const startServer = () => {
   L.trace('startServer');
@@ -19,10 +21,16 @@ const startServer = () => {
     server = new Server();
   }
 
+  if (!statusBarItem) {
+    statusBarItem = new StatusBarItem();
+  }
+
   server.setPort(port);
   server.setHost(host);
   server.setDontShowPortAlreadyInUseError(dontShowPortAlreadyInUseError);
   server.start(false);
+
+  statusBarItem.setServer(server);
 };
 
 const stopServer = () => {

@@ -31,10 +31,16 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
 
   // Launch the server on start up.
   "remote.onstartup": true
+
+  // Address to listen on.
+  "remote.host": "127.0.0.1"
+
+  // If set to true, error for remote.port already in use won't be shown anymore.
+  "remote.dontShowPortAlreadyInUseError": false
   ```
 
 * Start the server in the command palette - Press F1 and type `Remote: Start server`, and press `ENTER` to start the server.
-  You may see a `Starting server` at the status bar in the botton.
+  You may see a `Starting server` at the status bar in the bottom.
 
 * Create an ssh tunnel
   ```bash

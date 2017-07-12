@@ -1,5 +1,4 @@
 import * as assert from 'assert';
-
 import * as vscode from 'vscode';
 import Command from '../src/lib/Command';
 

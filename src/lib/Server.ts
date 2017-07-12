@@ -13,6 +13,7 @@ class Server {
   server : net.Server;
   port : number;
   host : string;
+  dontShowPortAlreadyInUseError : boolean = false;
   defaultSession : Session;
 
   start(quiet : boolean) {
@@ -59,6 +60,11 @@ class Server {
     return (this.host || DEFAULT_HOST);
   }
 
+  setDontShowPortAlreadyInUseError(dontShowPortAlreadyInUseError : boolean) {
+    L.trace('setDontShowPortAlreadyInUseError', dontShowPortAlreadyInUseError);
+    this.dontShowPortAlreadyInUseError = dontShowPortAlreadyInUseError;
+  }
+
   onServerConnection(socket) {
     L.trace('onServerConnection');
 
@@ -80,7 +86,11 @@ class Server {
     L.trace('onServerError', e);
 
     if (e.code == 'EADDRINUSE') {
-      return vscode.window.showErrorMessage(`Failed to start server, port ${e.port} already in use`);
+      if (this.dontShowPortAlreadyInUseError) {
+        return;
+      } else {
+        return vscode.window.showErrorMessage(`Failed to start server, port ${e.port} already in use`);
+      }
     }
 
     vscode.window.showErrorMessage(`Failed to start server, will try again in 10 seconds}`);
@@ -98,7 +108,7 @@ class Server {
     L.trace('stop');
 
     if (this.isOnline()) {
-      vscode.window.setStatusBarMessage("Stoping server", 2000);
+      vscode.window.setStatusBarMessage("Stopping server", 2000);
       this.server.close();
       this.setOnline(false);
     }

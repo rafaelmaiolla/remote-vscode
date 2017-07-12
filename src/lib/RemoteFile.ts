@@ -9,7 +9,7 @@ const L = Logger.getLogger('RemoteFile');
 
 class RemoteFile {
   dataSize : number;
-  writenDataSize : number = 0;
+  writtenDataSize : number = 0;
 
   token : string;
   localFilePath : string;
@@ -33,16 +33,16 @@ class RemoteFile {
   }
 
   setDisplayName(displayName : string) {
-    var displayNameSplitted = displayName.split(':');
+    var displayNameSplit = displayName.split(':');
 
-    if (displayNameSplitted.length === 1) {
+    if (displayNameSplit.length === 1) {
       this.remoteHost = "";
 
     } else {
-      this.remoteHost = displayNameSplitted.shift();
+      this.remoteHost = displayNameSplit.shift();
     }
 
-    this.remoteBaseName = displayNameSplitted.join(":");
+    this.remoteBaseName = displayNameSplit.join(":");
   }
 
   getHost() {
@@ -96,8 +96,8 @@ class RemoteFile {
     this.openSync();
   }
 
-  writeSycn(buffer : any, offset : number, length : number) {
-    L.trace('writeSycn');
+  writeSync(buffer : any, offset : number, length : number) {
+    L.trace('writeSync');
     if (this.fd) {
       L.debug('writing data');
       fs.writeSync(this.fd, buffer, offset, length, undefined);
@@ -113,14 +113,14 @@ class RemoteFile {
     L.trace('appendData', buffer.length);
 
     var length = buffer.length;
-    if (this.writenDataSize + length > this.dataSize) {
-      length = this.dataSize - this.writenDataSize;
+    if (this.writtenDataSize + length > this.dataSize) {
+      length = this.dataSize - this.writtenDataSize;
     }
 
-    this.writenDataSize += length;
-    L.debug("writenDataSize", this.writenDataSize);
+    this.writtenDataSize += length;
+    L.debug("writtenDataSize", this.writtenDataSize);
 
-    this.writeSycn(buffer, 0, length);
+    this.writeSync(buffer, 0, length);
   }
 
   setDataSize(dataSize : number) {
@@ -142,8 +142,8 @@ class RemoteFile {
 
   isReady() : boolean {
     L.trace('isReady');
-    L.debug('isReady?', this.writenDataSize == this.dataSize);
-    return this.writenDataSize == this.dataSize;
+    L.debug('isReady?', this.writtenDataSize == this.dataSize);
+    return this.writtenDataSize == this.dataSize;
   }
 }
 

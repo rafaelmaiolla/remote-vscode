@@ -50,6 +50,11 @@
           "type": "string",
           "default": "127.0.0.1",
           "description": "Address to listen on."
+        },
+        "remote.dontShowPortAlreadyInUseError": {
+          "type": "boolean",
+          "default": false,
+          "description": "If set to true, error for remote.port already in use won't be shown anymore."
         }
       }
     },

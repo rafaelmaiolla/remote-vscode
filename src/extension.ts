@@ -10,6 +10,7 @@ var changeConfigurationDisposable : vscode.Disposable;
 var port : number;
 var host : string;
 var onStartup : boolean;
+var dontShowPortAlreadyInUseError : boolean;
 
 const startServer = () => {
   L.trace('startServer');
@@ -20,6 +21,7 @@ const startServer = () => {
 
   server.setPort(port);
   server.setHost(host);
+  server.setDontShowPortAlreadyInUseError(dontShowPortAlreadyInUseError);
   server.start(false);
 };
 
@@ -38,6 +40,7 @@ const initialize = () => {
   onStartup = configuration.onStartup;
   port = configuration.port;
   host = configuration.host;
+  dontShowPortAlreadyInUseError = configuration.dontShowPortAlreadyInUseError;
 
   if (onStartup) {
     startServer();
@@ -50,6 +53,7 @@ const getConfiguration = () => {
 
   var configuration = {
     onStartup: remoteConfig.get<boolean>('onstartup'),
+    dontShowPortAlreadyInUseError: remoteConfig.get<boolean>('dontShowPortAlreadyInUseError'),
     port: remoteConfig.get<number>('port'),
     host: remoteConfig.get<string>('host')
   };
@@ -61,7 +65,10 @@ const getConfiguration = () => {
 
 const hasConfigurationChanged = (configuration) => {
   L.trace('hasConfigurationChanged');
-  var hasChanged = configuration.port !== port || configuration.onStartup !== onStartup || configuration.host !== host;
+  var hasChanged = ((configuration.port !== port) ||
+                    (configuration.onStartup !== onStartup) ||
+                    (configuration.host !== host) ||
+                    (configuration.dontShowPortAlreadyInUseError !== dontShowPortAlreadyInUseError));
 
   L.debug("hasConfigurationChanged?", hasChanged);
   return hasChanged;

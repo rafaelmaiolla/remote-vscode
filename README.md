@@ -33,7 +33,7 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
   "remote.onstartup": true
 
   // Address to listen on.
-  "remote.host": "127.0.0.1",
+  "remote.host": "127.0.0.1"
 
   // If set to true, error for remote.port already in use won't be shown anymore.
   "remote.dontShowPortAlreadyInUseError": false

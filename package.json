@@ -14,7 +14,7 @@
     "url": "https://github.com/rafaelmaiolla/remote-vscode/issues"
   },
   "engines": {
-    "vscode": "^1.0.0"
+    "vscode": "^1.13.0"
   },
   "keywords": [
     "rmate",
@@ -81,8 +81,8 @@
     "@types/log4js": "0.0.32",
     "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
-    "typescript": "^2.2.1",
-    "vscode": "1.0.3"
+    "vscode": "^1.1.2",
+    "typescript": "^2.2.1"
   },
   "dependencies": {
     "fs-extra": "2.0.0",

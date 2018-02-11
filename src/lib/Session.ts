@@ -4,6 +4,7 @@ import * as net from 'net';
 import Logger from '../utils/Logger';
 import Command from './Command';
 import RemoteFile from './RemoteFile';
+import {exec} from 'child_process';
 
 const L = Logger.getLogger('Session');
 
@@ -136,6 +137,7 @@ class Session extends EventEmitter {
         vscode.window.setStatusBarMessage(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`, 2000);
 
         this.showSelectedLine(textEditor);
+        exec("code");
       });
     });
   }

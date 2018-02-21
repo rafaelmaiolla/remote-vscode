@@ -15,6 +15,7 @@ class Server extends EventEmitter {
   port : number;
   host : string;
   dontShowPortAlreadyInUseError : boolean = false;
+  bringEditorToForeground : boolean = false;
   defaultSession : Session;
 
   constructor() {
@@ -74,14 +75,20 @@ class Server extends EventEmitter {
     this.dontShowPortAlreadyInUseError = dontShowPortAlreadyInUseError;
   }
 
+  setBringEditorToForeground(bringEditorToForeground : boolean) {
+    L.trace('setBringEditorToForeground', bringEditorToForeground);
+    this.bringEditorToForeground = bringEditorToForeground;
+  }
+
   onServerConnection(socket) {
     L.trace('onServerConnection');
 
     var session = new Session(socket);
+    session.setBringEditorToForeground(this.bringEditorToForeground);
     session.send("VSCode " + 1);
 
     session.on('connect', () => {
-      console.log("connect");
+      L.trace('onServerConnection::connect');
       this.defaultSession = session;
     });
   }

@@ -16,6 +16,7 @@ class Session extends EventEmitter {
   remoteFile : RemoteFile;
   attempts : number = 0;
   closeTimeout : NodeJS.Timer;
+  bringEditorToForeground: boolean = false;
 
   constructor(socket : net.Socket) {
     super();
@@ -26,6 +27,11 @@ class Session extends EventEmitter {
 
     this.socket.on('data', this.onSocketData.bind(this));
     this.socket.on('close', this.onSocketClose.bind(this));
+  }
+
+  setBringEditorToForeground(bringEditorToForeground : boolean) {
+    L.trace('setBringEditorToForeground', bringEditorToForeground);
+    this.bringEditorToForeground = bringEditorToForeground;
   }
 
   onSocketData(chunk : Buffer) {
@@ -137,7 +143,11 @@ class Session extends EventEmitter {
         vscode.window.setStatusBarMessage(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`, 2000);
 
         this.showSelectedLine(textEditor);
-        exec("code");
+
+        if (this.bringEditorToForeground) {
+          L.trace('openInEditor::vscode.window.showTextDocument', 'bring to foreground');
+          exec("code -r");
+        }
       });
     });
   }

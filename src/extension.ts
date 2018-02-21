@@ -12,6 +12,7 @@ var port : number;
 var host : string;
 var onStartup : boolean;
 var dontShowPortAlreadyInUseError : boolean;
+var bringEditorToForeground : boolean;
 var statusBarItem : StatusBarItem;
 
 const startServer = () => {
@@ -28,6 +29,7 @@ const startServer = () => {
   server.setPort(port);
   server.setHost(host);
   server.setDontShowPortAlreadyInUseError(dontShowPortAlreadyInUseError);
+  server.setBringEditorToForeground(bringEditorToForeground);
   server.start(false);
 
   statusBarItem.setServer(server);
@@ -49,6 +51,7 @@ const initialize = () => {
   port = configuration.port;
   host = configuration.host;
   dontShowPortAlreadyInUseError = configuration.dontShowPortAlreadyInUseError;
+  bringEditorToForeground = configuration.bringEditorToForeground;
 
   if (onStartup) {
     startServer();
@@ -62,6 +65,7 @@ const getConfiguration = () => {
   var configuration = {
     onStartup: remoteConfig.get<boolean>('onstartup'),
     dontShowPortAlreadyInUseError: remoteConfig.get<boolean>('dontShowPortAlreadyInUseError'),
+    bringEditorToForeground: remoteConfig.get<boolean>('bringEditorToForeground'),
     port: remoteConfig.get<number>('port'),
     host: remoteConfig.get<string>('host')
   };
@@ -76,7 +80,8 @@ const hasConfigurationChanged = (configuration) => {
   var hasChanged = ((configuration.port !== port) ||
                     (configuration.onStartup !== onStartup) ||
                     (configuration.host !== host) ||
-                    (configuration.dontShowPortAlreadyInUseError !== dontShowPortAlreadyInUseError));
+                    (configuration.dontShowPortAlreadyInUseError !== dontShowPortAlreadyInUseError) ||
+                    (configuration.bringEditorToForeground !== bringEditorToForeground));
 
   L.debug("hasConfigurationChanged?", hasChanged);
   return hasChanged;

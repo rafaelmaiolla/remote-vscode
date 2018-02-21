@@ -55,6 +55,11 @@
           "type": "boolean",
           "default": false,
           "description": "If set to true, error for remote.port already in use won't be shown anymore."
+        },
+        "remote.bringEditorToForeground": {
+          "type": "boolean",
+          "default": false,
+          "description": "If set to true, will try to focus the editor after opening the file."
         }
       }
     },
@@ -81,8 +86,9 @@
     "@types/log4js": "0.0.32",
     "@types/mocha": "^2.2.39",
     "@types/node": "^7.0.5",
-    "vscode": "^1.1.2",
-    "typescript": "^2.2.1"
+    "tslint": "^5.9.1",
+    "typescript": "^2.2.1",
+    "vscode": "^1.1.2"
   },
   "dependencies": {
     "fs-extra": "2.0.0",

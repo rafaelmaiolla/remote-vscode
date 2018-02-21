@@ -22,7 +22,7 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
 
 ## Usage
 
-* Configure in the User Settings:
+* Configure the following in VS Code User Settings:
   ```javascript
   //-------- Remote VSCode configuration --------
 

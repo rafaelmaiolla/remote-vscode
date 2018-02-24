@@ -36,7 +36,7 @@ A package that implements the Textmate's 'rmate' feature for VSCode.
   "remote.host": "127.0.0.1",
 
   // If set to true, error for remote.port already in use won't be shown anymore.
-  "remote.dontShowPortAlreadyInUseError": false
+  "remote.dontShowPortAlreadyInUseError": false,
   ```
 
 * Start the server in the command palette - Press F1 and type `Remote: Start server`, and press `ENTER` to start the server.

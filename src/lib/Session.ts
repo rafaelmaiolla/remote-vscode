@@ -130,7 +130,7 @@ class Session extends EventEmitter {
         return;
       }
 
-      vscode.window.showTextDocument(textDocument).then((textEditor : vscode.TextEditor) => {
+      vscode.window.showTextDocument(textDocument, {preview: false}).then((textEditor : vscode.TextEditor) => {
         this.handleChanges(textDocument);
         L.info(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`);
         vscode.window.setStatusBarMessage(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`, 2000);

@@ -2,7 +2,7 @@
   "name": "remote-vscode",
   "displayName": "Remote VSCode",
   "description": "A package that implements the Textmate's 'rmate' feature for VSCode.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "publisher": "rafaelmaiolla",
   "license": "MIT",
   "author": "Rafael Maiolla <rafaelmaiolla@gmail.com>",
@@ -77,15 +77,15 @@
     "lint": "eslint src"
   },
   "devDependencies": {
-    "@types/fs-extra": "0.0.37",
-    "@types/log4js": "0.0.32",
-    "@types/mocha": "^2.2.39",
-    "@types/node": "^7.0.5",
-    "vscode": "^1.1.2",
-    "typescript": "^2.2.1"
+    "@types/fs-extra": "5.0.4",
+    "@types/log4js": "2.3.5",
+    "@types/mocha": "2.2.39",
+    "@types/node": "10.12.12",
+    "vscode": "1.1.26",
+    "typescript": "3.2.1"
   },
   "dependencies": {
-    "fs-extra": "2.0.0",
-    "log4js": "1.1.0"
+    "fs-extra": "7.0.1",
+    "log4js": "3.0.6"
   }
 }

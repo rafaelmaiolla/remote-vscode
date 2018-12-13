@@ -134,7 +134,13 @@ class Session extends EventEmitter {
         this.handleChanges(textDocument);
         L.info(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`);
         vscode.window.setStatusBarMessage(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`, 2000);
-
+        this.subscriptions.push(vscode.window.onDidChangeVisibleTextEditors((editors: vscode.TextEditor[]) => {
+          // Close the editing session when the text editor becomes invisible.
+          // This is a workaround: sometimes the identity of the text document changes, so onDidCloseTextDocument below does
+          // not fire. See https://github.com/Microsoft/vscode/issues/30820.
+          if (editors.indexOf(textEditor) !== -1) return;
+          this.close();
+        }));
         this.showSelectedLine(textEditor);
       });
     });

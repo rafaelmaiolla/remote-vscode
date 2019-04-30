@@ -170,7 +170,9 @@ class Session extends EventEmitter {
   showSelectedLine(textEditor : vscode.TextEditor) {
     var selection = +(this.command.getVariable('selection'));
     if (selection) {
-      textEditor.revealRange(new vscode.Range(selection, 0, selection + 1, 1));
+      var line = ((selection-1) > 0) ? (selection-1) : 0;
+      textEditor.revealRange(new vscode.Range(line, 0, line, 0), vscode.TextEditorRevealType.InCenter);
+      textEditor.selection = new vscode.Selection(new vscode.Position(line,0), new vscode.Position(line,0));
     }
   }
 

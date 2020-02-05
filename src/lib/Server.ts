@@ -65,7 +65,7 @@ class Server extends EventEmitter {
   }
 
   getHost() : string {
-    L.trace('getHost', +(this.host || DEFAULT_HOST));
+    L.trace('getHost', (this.host || DEFAULT_HOST));
     return (this.host || DEFAULT_HOST);
   }
 

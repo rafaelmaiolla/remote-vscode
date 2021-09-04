@@ -1,6 +1,6 @@
 'use strict';
 import * as vscode from 'vscode';
-import Server from './lib/Server';
+import Server, { DEFAULT_HOST, DEFAULT_PORT } from './lib/Server';
 import Logger from './utils/Logger';
 import StatusBarItem from './lib/StatusBarItem';
 
@@ -13,6 +13,13 @@ var host : string;
 var onStartup : boolean;
 var dontShowPortAlreadyInUseError : boolean;
 var statusBarItem : StatusBarItem;
+
+type Configuration = {
+  onStartup: boolean
+  dontShowPortAlreadyInUseError: boolean
+  port: number,
+  host: string
+}
 
 const startServer = () => {
   L.trace('startServer');
@@ -55,15 +62,15 @@ const initialize = () => {
   }
 };
 
-const getConfiguration = () => {
+const getConfiguration = (): Configuration => {
   L.trace('getConfiguration');
   var remoteConfig = vscode.workspace.getConfiguration('remote');
 
   var configuration = {
-    onStartup: remoteConfig.get<boolean>('onstartup'),
-    dontShowPortAlreadyInUseError: remoteConfig.get<boolean>('dontShowPortAlreadyInUseError'),
-    port: remoteConfig.get<number>('port'),
-    host: remoteConfig.get<string>('host')
+    onStartup: remoteConfig.get<boolean>('onstartup') ?? false,
+    dontShowPortAlreadyInUseError: remoteConfig.get<boolean>('dontShowPortAlreadyInUseError') ?? false,
+    port: remoteConfig.get<number>('port') ?? DEFAULT_PORT,
+    host: remoteConfig.get<string>('host') ?? DEFAULT_HOST
   };
 
   L.debug("getConfiguration", configuration);
@@ -71,7 +78,7 @@ const getConfiguration = () => {
   return configuration;
 };
 
-const hasConfigurationChanged = (configuration) => {
+const hasConfigurationChanged = (configuration: Configuration) => {
   L.trace('hasConfigurationChanged');
   var hasChanged = ((configuration.port !== port) ||
                     (configuration.onStartup !== onStartup) ||

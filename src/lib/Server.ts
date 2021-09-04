@@ -6,16 +6,16 @@ import {EventEmitter} from 'events';
 
 const L = Logger.getLogger('Server');
 
-const DEFAULT_PORT = 52698;
-const DEFAULT_HOST = '127.0.0.1';
+export const DEFAULT_PORT = 52698;
+export const DEFAULT_HOST = '127.0.0.1';
 
 class Server extends EventEmitter {
   online : boolean = false;
-  server : net.Server;
-  port : number;
-  host : string;
+  server : net.Server | undefined;
+  port : number = DEFAULT_PORT;
+  host : string = DEFAULT_HOST;
   dontShowPortAlreadyInUseError : boolean = false;
-  defaultSession : Session;
+  defaultSession : Session | undefined;
 
   constructor() {
     super();
@@ -65,7 +65,7 @@ class Server extends EventEmitter {
   }
 
   getHost() : string {
-    L.trace('getHost', +(this.host || DEFAULT_HOST));
+    L.trace('getHost', (this.host || DEFAULT_HOST));
     return (this.host || DEFAULT_HOST);
   }
 
@@ -74,7 +74,7 @@ class Server extends EventEmitter {
     this.dontShowPortAlreadyInUseError = dontShowPortAlreadyInUseError;
   }
 
-  onServerConnection(socket) {
+  onServerConnection(socket: net.Socket) {
     L.trace('onServerConnection');
 
     var session = new Session(socket);
@@ -86,13 +86,13 @@ class Server extends EventEmitter {
     });
   }
 
-  onServerListening(e) {
+  onServerListening() {
     L.trace('onServerListening');
     this.setOnline(true);
     this.emit('ready');
   }
 
-  onServerError(e) {
+  onServerError(e: any) {
     L.trace('onServerError', e);
 
     this.emit('error', e);
@@ -105,11 +105,13 @@ class Server extends EventEmitter {
       }
     }
 
-    vscode.window.showErrorMessage(`Failed to start server, will try again in 10 seconds}`);
+    vscode.window.showErrorMessage(`Failed to start server, will try again in 10 seconds`);
 
     setTimeout(() => {
       this.start(true);
     }, 10000);
+
+    return;
   }
 
   onServerClose() {
@@ -123,7 +125,7 @@ class Server extends EventEmitter {
 
     if (this.isOnline()) {
       vscode.window.setStatusBarMessage("Stopping server", 2000);
-      this.server.close();
+      this.server?.close();
       this.setOnline(false);
     }
   }

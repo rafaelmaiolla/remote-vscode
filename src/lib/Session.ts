@@ -8,13 +8,13 @@ import RemoteFile from './RemoteFile';
 const L = Logger.getLogger('Session');
 
 class Session extends EventEmitter {
-  command : Command;
+  command : Command | undefined;
   socket : net.Socket;
   online : boolean;
   subscriptions : Array<vscode.Disposable> = [];
-  remoteFile : RemoteFile;
+  remoteFile : RemoteFile | undefined;
   attempts : number = 0;
-  closeTimeout : NodeJS.Timer;
+  closeTimeout : ReturnType<typeof setTimeout> | undefined;
 
   constructor(socket : net.Socket) {
     super();
@@ -43,19 +43,23 @@ class Session extends EventEmitter {
   parseChunk(buffer : any) {
     L.trace('parseChunk', buffer);
 
-    if (this.command && this.remoteFile.isReady()) {
+    if (this.command && this.remoteFile?.isReady()) {
       return;
     }
 
     var chunk = buffer.toString("utf8");
     var lines = chunk.split("\n");
 
-    if (!this.command) {
+    if (this.command == null) {
       this.command = new Command(lines.shift());
+      this.remoteFile = undefined;
+    }
+
+    if (this.remoteFile == null) {
       this.remoteFile = new RemoteFile();
     }
 
-    if (this.remoteFile.isEmpty()) {
+    if (!this.remoteFile.isInitialized()) {
       while (lines.length) {
         var line = lines.shift().trim();
 
@@ -86,7 +90,7 @@ class Session extends EventEmitter {
     }
 
     if (this.remoteFile.isReady()) {
-      this.remoteFile.closeSync();
+      this.remoteFile.finalize();
       this.handleCommand(this.command);
     }
   }
@@ -114,6 +118,17 @@ class Session extends EventEmitter {
   openInEditor() {
     L.trace('openInEditor');
 
+    if (this.remoteFile == null) {
+      L.error('openInEditor - remote file is not defined');
+      throw new Error("Remote file is not defined");
+    }
+
+    const localFilePath = this.remoteFile?.getLocalFilePath();
+    if (localFilePath == null) {
+      L.error('openInEditor - local file path is not defined');
+      throw new Error('Local file path is not defined');
+    }
+
     vscode.workspace.openTextDocument(this.remoteFile.getLocalFilePath()).then((textDocument : vscode.TextDocument) => {
       if (!textDocument && this.attempts < 3) {
         L.warn("Failed to open the text document, will try again");
@@ -125,15 +140,15 @@ class Session extends EventEmitter {
         return;
 
       } else if (!textDocument) {
-        L.error("Could NOT open the file", this.remoteFile.getLocalFilePath());
-        vscode.window.showErrorMessage(`Failed to open file ${this.remoteFile.getRemoteBaseName()}`);
+        L.error("Could NOT open the file", this.remoteFile?.getLocalFilePath());
+        vscode.window.showErrorMessage(`Failed to open file ${this.remoteFile?.getRemoteBaseName()}`);
         return;
       }
 
       vscode.window.showTextDocument(textDocument).then((textEditor : vscode.TextEditor) => {
         this.handleChanges(textDocument);
-        L.info(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`);
-        vscode.window.setStatusBarMessage(`Opening ${this.remoteFile.getRemoteBaseName()} from ${this.remoteFile.getHost()}`, 2000);
+        L.info(`Opening ${this.remoteFile?.getRemoteBaseName()} from ${this.remoteFile?.getHost()}`);
+        vscode.window.setStatusBarMessage(`Opening ${this.remoteFile?.getRemoteBaseName()} from ${this.remoteFile?.getHost()}`, 2000);
 
         this.showSelectedLine(textEditor);
       });
@@ -168,7 +183,7 @@ class Session extends EventEmitter {
   }
 
   showSelectedLine(textEditor : vscode.TextEditor) {
-    var selection = +(this.command.getVariable('selection'));
+    var selection = +(this.command?.getVariable('selection'));
     if (selection) {
       textEditor.revealRange(new vscode.Range(selection, 0, selection + 1, 1));
     }
@@ -216,18 +231,18 @@ class Session extends EventEmitter {
 
     if (!this.isOnline()) {
       L.error("NOT online");
-      vscode.window.showErrorMessage(`Error saving ${this.remoteFile.getRemoteBaseName()} to ${this.remoteFile.getHost()}`);
+      vscode.window.showErrorMessage(`Error saving ${this.remoteFile?.getRemoteBaseName()} to ${this.remoteFile?.getHost()}`);
       return;
     }
 
-    vscode.window.setStatusBarMessage(`Saving ${this.remoteFile.getRemoteBaseName()} to ${this.remoteFile.getHost()}`, 2000);
+    vscode.window.setStatusBarMessage(`Saving ${this.remoteFile?.getRemoteBaseName()} to ${this.remoteFile?.getHost()}`, 2000);
 
-    var buffer = this.remoteFile.readFileSync();
+    var buffer = this.remoteFile?.readFileSync();
 
     this.send("save");
-    this.send(`token: ${this.remoteFile.getToken()}`);
-    this.send("data: " + buffer.length);
-    this.socket.write(buffer);
+    this.send(`token: ${this.remoteFile?.getToken()}`);
+    this.send("data: " + buffer?.length ?? 0);
+    this.socket.write(buffer ?? '');
     this.send("");
   }
 

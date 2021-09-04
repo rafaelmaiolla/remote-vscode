@@ -5,7 +5,7 @@ import Logger from '../utils/Logger';
 const L = Logger.getLogger('StatusBarItem');
 
 class StatusBarItem {
-  server: Server = null;
+  server: Server | null = null;
   item: vscode.StatusBarItem;
 
   constructor() {
@@ -63,7 +63,7 @@ class StatusBarItem {
     this.item.show();
   }
 
-  onError(e) {
+  onError(e: any) {
     L.trace('onError');
 
     if (e.code == 'EADDRINUSE') {

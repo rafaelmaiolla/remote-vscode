@@ -86,6 +86,6 @@
   },
   "dependencies": {
     "fs-extra": "7.0.1",
-    "log4js": "3.0.6"
+    "log4js": "6.4.0"
   }
 }
